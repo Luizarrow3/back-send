@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#153a6b" />
+    <title>Painel do Censo Previdenciário</title>
+    <link rel="stylesheet" href="/static/tailwind.generated.css" />
+    <link rel="stylesheet" href="/static/painel.css" />
+</head>
+<body class="min-h-screen bg-slate-100 text-slate-900 antialiased transition-colors duration-200 dark:bg-slate-950 dark:text-slate-100">
+    <header class="topbar">
+        <a class="brand" href="/painel" aria-label="Censo Previdenciário, início">
+            <span class="brand-mark" aria-hidden="true">CP</span>
+            <span><strong>Censo Previdenciário</strong><small>Gestão previdenciária</small></span>
+        </a>
+        <div class="topbar-actions">
+            <span class="user-label"><span class="user-label-caption">Usuário</span><strong id="usuario-nome">...</strong></span>
+            <button class="button button-quiet" id="logout-btn" type="button">Sair</button>
+        </div>
+    </header>
+
+    <div class="app-shell">
+        <aside class="sidebar">
+            <p class="nav-caption">Área de trabalho</p>
+            <nav class="primary-nav" aria-label="Navegação principal">
+                <button class="nav-item active" type="button" data-view="dashboard" aria-current="page">
+                    <svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="11" width="7" height="10" rx="1"/><rect x="3" y="14" width="8" height="7" rx="1"/></svg>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-item" type="button" data-view="people">
+                    <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <span>Recenseados</span>
+                </button>
+                <button class="nav-item" type="button" data-view="reports">
+                    <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg>
+                    <span>Relatórios</span>
+                </button>
+                <button class="nav-item" type="button" data-view="settings">
+                    <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.7a8 8 0 0 1-1.4.8l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.4-.8l-1.7.7-1.4-2.4 1.4-1.1a7 7 0 0 1 0-1.8l-1.4-1.1 1.4-2.4 1.7.7a8 8 0 0 1 1.4-.8l.3-1.8h2.8l.3 1.8a8 8 0 0 1 1.4.8l1.7-.7 1.4 2.4-1.4 1.1a7 7 0 0 1 0 1.8z" transform="translate(-1 -1) scale(1.08)"/></svg>
+                    <span>Configurações</span>
+                </button>
+            </nav>
+            <div class="sidebar-footer"><span class="status-dot"></span><span>Ambiente operacional</span></div>
+        </aside>
+
+        <main class="main-content">
+            <div id="notice" class="notice" role="status" hidden></div>
+            <div class="page-heading">
+                <div><p class="eyebrow">Censo Previdenciário</p><h1 id="page-title">Dashboard</h1><p id="page-description">Acompanhe os indicadores e a evolução dos cadastros.</p></div>
+                <button class="button button-outline" id="refresh-btn" type="button">
+                    <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.6 9a7 7 0 0 1 11.6-2L20 12M4 12l2.8 5a7 7 0 0 0 11.6-2"/></svg>
+                    Atualizar dados
+                </button>
+            </div>
+
+            <section id="view-dashboard" class="app-view" aria-labelledby="dashboard-title">
+                <h2 id="dashboard-title" class="visually-hidden">Indicadores do censo</h2>
+                <div class="metrics" aria-label="Indicadores">
+                    <article class="metric-card"><span>Total de recenseados</span><strong id="metric-total">—</strong><small>Cadastros no sistema</small></article>
+                    <article class="metric-card"><span>Pendentes</span><strong id="metric-pending">—</strong><small>Aguardando análise</small></article>
+                    <article class="metric-card"><span>Validações simuladas</span><strong id="metric-biometric">—</strong><small>Correspondências registradas</small></article>
+                    <article class="metric-card"><span>Idade média</span><strong id="metric-average-age">—</strong><small>Entre os cadastrados</small></article>
+                </div>
+                <section class="panel chart-panel">
+                    <div class="panel-heading"><div><p class="eyebrow">Distribuição</p><h2>Cadastros por status</h2></div><span class="muted">Atualização automática</span></div>
+                    <div id="status-chart" class="chart" aria-live="polite"></div>
+                </section>
+                <details class="panel terminal-panel">
+                    <summary><span><p class="eyebrow">Ferramentas operacionais</p><strong>Terminal administrativo</strong></span><span class="terminal-hint">Comandos disponíveis</span></summary>
+                    <div id="terminal-output" class="terminal-output" aria-live="polite"></div>
+                    <form id="terminal-form" class="terminal-form">
+                        <label for="terminal-input">operador@censo:</label>
+                        <input id="terminal-input" type="text" autocomplete="off" spellcheck="false" placeholder="Digite ajuda para listar comandos" />
+                        <button class="button button-quiet" type="submit">Executar</button>
+                        <button class="button button-quiet" id="terminal-clear" type="button">Limpar</button>
+                    </form>
+                </details>
+                <p class="security-note">A validação facial disponível é uma simulação e não executa reconhecimento biométrico real.</p>
+            </section>
+
+            <section id="view-people" class="app-view" aria-labelledby="people-title" hidden>
+                <section class="panel people-panel">
+                    <div class="panel-heading">
+                        <div><p class="eyebrow">Base cadastral</p><h2 id="people-title">Gestão de recenseados</h2></div>
+                        <button class="button button-primary" id="add-person" type="button">
+                            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                            Novo recenseado
+                        </button>
+                    </div>
+                    <form id="search-form" class="filters">
+                        <label class="search-field" for="search-input"><span class="visually-hidden">Buscar por nome ou CPF</span>
+                            <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+                            <input id="search-input" type="search" placeholder="Buscar por nome ou CPF" autocomplete="off" />
+                        </label>
+                        <label for="status-filter" class="visually-hidden">Filtrar por status</label>
+                        <select id="status-filter">
+                            <option value="">Todos os status</option>
+                            <option value="PENDENTE">Pendente</option>
+                            <option value="EM_ANALISE">Em análise</option>
+                            <option value="RECENSEADO">Recenseado</option>
+                            <option value="REJEITADO">Rejeitado</option>
+                        </select>
+                        <button class="button button-outline" type="submit">Filtrar resultados</button>
+                    </form>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Nome / CPF</th><th>Sexo</th><th>Nascimento</th><th>Status</th><th>Ações</th></tr></thead>
+                            <tbody id="people-rows"><tr><td colspan="5" class="empty-state">Carregando...</td></tr></tbody>
+                        </table>
+                    </div>
+                    <div class="pagination">
+                        <button class="button button-outline" id="previous-page" type="button">Anterior</button>
+                        <span id="page-label" aria-live="polite"></span>
+                        <button class="button button-outline" id="next-page" type="button">Próxima</button>
+                    </div>
+                </section>
+            </section>
+
+            <section id="view-reports" class="app-view" aria-labelledby="reports-title" hidden>
+                <section class="panel report-panel">
+                    <div class="panel-heading"><div><p class="eyebrow">Exportação consolidada</p><h2 id="reports-title">Relatórios</h2></div></div>
+                    <p class="muted">Gere um relatório dos recenseados usando os filtros de status e nome ou CPF. Os documentos exportados apresentam o CPF mascarado.</p>
+                    <form id="report-form" class="filters">
+                        <label class="search-field" for="report-search">Nome ou CPF
+                            <input id="report-search" type="search" placeholder="Todos os recenseados" autocomplete="off" />
+                        </label>
+                        <label for="report-status">Status
+                            <select id="report-status">
+                                <option value="">Todos os status</option>
+                                <option value="PENDENTE">Pendente</option>
+                                <option value="EM_ANALISE">Em análise</option>
+                                <option value="RECENSEADO">Recenseado</option>
+                                <option value="REJEITADO">Rejeitado</option>
+                            </select>
+                        </label>
+                        <button class="button button-outline" type="submit">Aplicar filtros</button>
+                    </form>
+                    <div class="report-summary" id="report-summary" aria-live="polite">Aplique os filtros para consultar a quantidade de registros.</div>
+                    <div class="heading-actions">
+                        <button class="button button-primary" id="export-csv" type="button">Exportar CSV</button>
+                        <button class="button button-outline" id="print-report" type="button">Gerar PDF</button>
+                    </div>
+                </section>
+            </section>
+
+            <section id="view-settings" class="app-view" aria-labelledby="settings-title" hidden>
+                <section class="panel settings-panel">
+                    <div class="panel-heading"><div><p class="eyebrow">Preferências pessoais</p><h2 id="settings-title">Configurações</h2></div></div>
+                    <div class="settings-row"><div><strong>Aparência</strong><p>Escolha o tema visual desta estação de trabalho.</p></div>
+                        <label for="theme-select" class="settings-control"><span>Tema</span><select id="theme-select"><option value="light">Claro</option><option value="dark">Escuro</option></select></label></div>
+                    <div class="settings-row"><div><strong>Bloqueio por inatividade</strong><p>A sessão será bloqueada e exigirá nova autenticação.</p></div>
+                        <label for="idle-time-select" class="settings-control"><span>Tempo limite</span><select id="idle-time-select"><option value="1">1 minuto</option><option value="5">5 minutos</option><option value="10">10 minutos</option><option value="15">15 minutos</option></select></label></div>
+                </section>
+            </section>
+        </main>
+    </div>
+
+    <dialog id="person-dialog" class="dialog">
+        <form id="person-form">
+            <div class="dialog-heading"><div><p class="eyebrow">Base cadastral</p><h2 id="person-dialog-title">Novo recenseado</h2></div>
+                <button class="icon-button" type="button" data-close-dialog="person-dialog" aria-label="Fechar"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m18 6-12 12M6 6l12 12"/></svg></button></div>
+            <input id="person-id" type="hidden" />
+            <label for="person-name">Nome completo</label><input id="person-name" required minlength="2" maxlength="150" />
+            <div id="person-cpf-field"><label for="person-cpf">CPF</label><input id="person-cpf" inputmode="numeric" placeholder="Somente números" /></div>
+            <div class="form-grid">
+                <div><label for="person-sex">Sexo</label><select id="person-sex" required><option>FEMININO</option><option>MASCULINO</option><option>OUTRO</option></select></div>
+                <div><label for="person-birth">Data de nascimento</label><input id="person-birth" type="date" required /></div>
+            </div>
+            <label for="person-photo">Foto ou documento (JPG/PNG, até 5 MB)</label><input id="person-photo" type="file" accept="image/png,image/jpeg" capture="user" />
+            <img id="photo-preview" class="photo-preview" alt="Pré-visualização do arquivo selecionado" hidden />
+            <div class="dialog-actions"><button class="button button-outline" type="button" data-close-dialog="person-dialog">Cancelar</button><button class="button button-primary" type="submit">Salvar cadastro</button></div>
+        </form>
+    </dialog>
+
+    <dialog id="photo-viewer" class="dialog photo-dialog"><button class="icon-button" type="button" data-close-dialog="photo-viewer" aria-label="Fechar"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m18 6-12 12M6 6l12 12"/></svg></button><img id="photo-viewer-image" alt="Foto ou documento do recenseado" /></dialog>
+
+    <dialog id="action-dialog" class="dialog">
+        <form id="action-form">
+            <div class="dialog-heading"><div><p class="eyebrow">Confirmação</p><h2 id="action-title"></h2></div>
+                <button class="icon-button" type="button" data-close-dialog="action-dialog" aria-label="Fechar"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m18 6-12 12M6 6l12 12"/></svg></button></div>
+            <p id="action-message" class="muted"></p>
+            <div id="action-reason-field" hidden><label for="action-reason">Motivo da rejeição</label><textarea id="action-reason" rows="3" maxlength="500"></textarea></div>
+            <div class="dialog-actions"><button class="button button-outline" id="action-cancel" type="button">Cancelar</button><button class="button button-primary" id="action-confirm" type="submit">Confirmar</button></div>
+        </form>
+    </dialog>
+
+    <section id="lock-overlay" class="lock-overlay" hidden aria-labelledby="lock-title">
+        <form id="lock-form" class="lock-card">
+            <span class="brand-mark" aria-hidden="true">CP</span><p class="eyebrow">Sessão protegida</p><h2 id="lock-title">Tela bloqueada</h2>
+            <p class="muted">Confirme sua identidade para continuar.</p>
+            <label for="lock-email">E-mail</label><input id="lock-email" type="email" required autocomplete="username" />
+            <label for="lock-password">Senha</label><input id="lock-password" type="password" required autocomplete="current-password" />
+            <p id="lock-error" class="lock-error" role="alert" hidden></p>
+            <button class="button button-primary" type="submit">Desbloquear sessão</button>
+        </form>
+    </section>
+    <script type="module" src="/static/painel.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "name": "censo-previdenciario-frontend",
+  "private": true,
+  "scripts": {
+    "build:css": "tailwindcss -i ./frontend/tailwind.css -o ./frontend/tailwind.generated.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}

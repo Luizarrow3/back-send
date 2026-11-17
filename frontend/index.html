@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Censo Previdenciário</title>
+    <style>
+        :root {
+            --espaco-1: 4px;
+            --espaco-2: 8px;
+            --espaco-3: 12px;
+            --espaco-4: 16px;
+            --espaco-6: 24px;
+            --espaco-8: 32px;
+            --margem-pagina: 16px;
+            --texto-base: clamp(0.875rem, calc(0.875rem + 0.15vw), 1rem);
+        }
+
+        @media (min-width: 768px) {
+            :root { --margem-pagina: 24px; }
+        }
+
+        @media (min-width: 1024px) {
+            :root { --margem-pagina: 32px; }
+        }
+
+        *,
+        *::before,
+        *::after { box-sizing: border-box; }
+
+        html { min-height: 100%; }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: var(--texto-base);
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+            background: #f1f5f9;
+            margin: 0;
+            display: grid;
+            place-items: center;
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding: var(--espaco-4);
+            padding-bottom: calc(var(--espaco-4) + env(safe-area-inset-bottom));
+        }
+
+        button,
+        input { font: inherit; }
+
+        button { min-height: 44px; }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.1);
+            width: min(420px, 100%);
+            min-width: 0;
+            padding: clamp(var(--espaco-4), 5vw, var(--espaco-8));
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #0f172a;
+            font-size: clamp(1.5rem, calc(1.25rem + 1vw), 2rem);
+        }
+
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #334155; }
+        input { width: 100%; min-width: 0; font-size: 16px; padding: 12px 14px; margin-bottom: 16px; border: 1px solid #cbd5e1; border-radius: 10px; }
+        button { width: 100%; background: #1d4ed8; color: white; border: none; border-radius: 10px; padding: 12px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .error { color: #b91c1c; min-height: 20px; margin-top: 12px; font-weight: bold; }
+        .muted { color: #475569; font-size: 14px; margin-top: 12px; }
+    </style>
+</head>
+<body data-page="login">
+    <div class="card">
+        <h1>Login</h1>
+        <form id="login-form">
+            <div>
+                <label for="email">E-mail</label>
+                <input id="email" type="email" placeholder="admin@local.test" required />
+            </div>
+            <div>
+                <label for="password">Senha</label>
+                <input id="password" type="password" placeholder="Sua senha" required />
+            </div>
+            <button type="submit">Entrar</button>
+            <div id="login-error" class="error"></div>
+        </form>
+        <p class="muted">Use o usuário administrativo padrão configurado no ambiente.</p>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
